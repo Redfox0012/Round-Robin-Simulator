@@ -38,6 +38,7 @@ def count_process_executed(process_id: int, arr_process: list):
             process['count'] += 1
     return arr_process
 
+
 def last_time_in(process_id: int, arr_process: list, time: int):
     """
         Salva no proprio arr_process o tempo da ultima vez que entrou para execução
@@ -53,6 +54,7 @@ def last_time_in(process_id: int, arr_process: list, time: int):
             process['lastTimeIn'] = time
 
     return arr_process
+
 
 def add_process_to_ready_queue_by_time(ready_queue: Queue, process_stack: LifoQueue, time: int):
     """
@@ -115,18 +117,20 @@ def initialize(list_process: list, has_arrival_time: bool = False):
 
     return process_stack
 
+
 def copy_arr(arr):
     newArr = []
     for i in arr:
         newArr.append(i.copy())
     return newArr
 
+
 if __name__ == '__main__':
-    quantum = 1
-    has_arrival_time = False
+    quantum = 2
+    has_arrival_time = True
 
     arr_process = [
-        {'id': 1, 'arrivalTime': 5, 'burstTime': 10, 'color': 41, 'lastTimeIn': 0, 'count': 0, 'waitingTime': 0},
+        {'id': 1, 'arrivalTime': 15, 'burstTime': 10, 'color': 41, 'lastTimeIn': 0, 'count': 0, 'waitingTime': 0},
         {'id': 2, 'arrivalTime': 3, 'burstTime': 1, 'color': 42, 'lastTimeIn': 0, 'count': 0, 'waitingTime': 0},
         {'id': 3, 'arrivalTime': 1, 'burstTime': 2, 'color': 43, 'lastTimeIn': 0, 'count': 0, 'waitingTime': 0},
         {'id': 4, 'arrivalTime': 8, 'burstTime': 1, 'color': 44, 'lastTimeIn': 0, 'count': 0, 'waitingTime': 0},
@@ -134,7 +138,6 @@ if __name__ == '__main__':
     ]
     aux_last_time_in = 0
     time = 0
-    num_process_ready = 0
     process_queue_or_stack = initialize(arr_process, has_arrival_time)
     ready_queue = Queue()
     process_stack = LifoQueue()
@@ -144,10 +147,8 @@ if __name__ == '__main__':
     # Se considerar arrival time pega apenas o primeiro elemento da pilha
     else:
         process_stack = process_queue_or_stack
-        first_process = process_stack.get()
-        time = first_process['arrivalTime']
-        ready_queue.put(first_process)
         add_process_to_ready_queue_by_time(ready_queue, process_stack, time)
+
     while (not ready_queue.empty()) or (not process_stack.empty()):
         if not ready_queue.empty():
             process = ready_queue.get()
@@ -155,7 +156,6 @@ if __name__ == '__main__':
             for q in range(quantum):
                 print(f"\033[1;30;{process['color']}mP{str(process['id'])}", end="")
                 process['burstTime'] -= 1
-                #count_process_executed(process['id'], arr_process)
                 if process['id'] != aux_last_time_in:
                     arr_process = last_time_in(process['id'], arr_process, time)
                     arr_process = count_process_executed(process['id'], arr_process)
@@ -173,14 +173,13 @@ if __name__ == '__main__':
             print(f"\033[0;0m-", end="")
             add_process_to_ready_queue_by_time(ready_queue, process_stack, time)
 
-print("\033[0;0m")
-arr_process, avarage = calc_waiting_time(arr_process, has_arrival_time)
-print()
-for process in arr_process:
-    print(f"Processo: \033[1;30;{process['color']}mP{str(process['id'])}\033[0;0m")
-    print(f"id: {process['id']}")
-    print(f"Tempo de espera: {process['waitingTime']}")
-    print('---' * 50)
+    print("\033[0;0m")
+    arr_process, avarage = calc_waiting_time(arr_process, has_arrival_time)
+    print()
+    for process in arr_process:
+        print(f"Processo: \033[1;30;{process['color']}mP{str(process['id'])}\033[0;0m")
+        print(f"id: {process['id']}")
+        print(f"Tempo de espera: {process['waitingTime']}")
+        print('---' * 50)
 
-print(f'Tempo médio de espera: {avarage}')
-
+    print(f'Tempo médio de espera: {avarage}')
